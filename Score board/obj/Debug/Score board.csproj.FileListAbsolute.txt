@@ -1,0 +1,15 @@
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\bin\Debug\Score board.exe.config
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\obj\Debug\Score_board.Properties.Resources.resources
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\obj\Debug\Score board.csproj.GenerateResource.Cache
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\bin\Debug\Score board.exe
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\bin\Debug\Score board.pdb
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\obj\Debug\Score board.exe
+c:\users\terrence\documents\visual studio 2015\Projects\Score board\Score board\obj\Debug\Score board.pdb
+C:\Users\Terrence\Documents\Visual Studio 2015\Projects\Score board\Score board\obj\Debug\Score_board.Login.resources
+C:\Users\Terrence\Documents\Visual Studio 2015\Projects\Score board\Score board\bin\Debug\System.Data.SQLite.dll
+C:\Users\Terrence\Documents\Visual Studio 2015\Projects\Score board\Score board\bin\Debug\System.Data.SQLite.xml
+C:\Users\Terrence\Documents\Visual Studio 2015\Projects\Score board\Score board\obj\Debug\Score_board.frmScoreboard.resources
+C:\Users\Terrence\Documents\Visual Studio 2015\Projects\Score board\Score board\obj\Debug\Score_board.frmDashboard.resources
+C:\Users\Terrence\Source\Repos\score-board\Score board\bin\Debug\Score board.exe.config
+C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score board.exe
+C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score board.pdb
