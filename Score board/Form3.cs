@@ -15,13 +15,11 @@ namespace Score_board
     public partial class frmScoreboard : System.Windows.Forms.Form
     {
 
-        private SQLiteConnection sqlConn;
-        private SQLiteCommand sqlCmd;
-        private SQLiteDataAdapter DB;
+        private Database database = new Database();
         private DataTable sqlDT = new DataTable();
         private DataSet DS = new DataSet();
+
         private int teams = 0;
-        private int teainfoms = 0;
         private string absolutepath;
 
         public Panel teamPane1 = new Panel();
@@ -69,19 +67,10 @@ namespace Score_board
             this.teams = 0;
             InitializeComponent();
             this.Load += new EventHandler(frmScoreboard_Load);
-            this.teamLabelName4.Text = "100";
         }
 
 
-        public frmScoreboard(String lblTeam1, String lblTeamScore1)
-        {
-            this.teams = 0;
-            InitializeComponent();
-            this.Load += new EventHandler(frmScoreboard_Load);
-            this.teamLabelName4.Text = "100";
-            this.lblTeam1 = lblTeam1;
-            this.lblTeamScore1 = lblTeamScore1;
-        }
+
 
         private void frmScoreboard_Load(System.Object sender, System.EventArgs e)
         {
@@ -92,25 +81,16 @@ namespace Score_board
            
         }
 
-        private void SetConnection()
-        {
-            sqlConn = new SQLiteConnection("Data Source=C:\\Users\\Terrence\\Documents\\Visual Studio 2015\\Projects\\Scoreboard.db");
-        }
+
 
         private void LoadData()
         {
-            SetConnection();
-            sqlConn.Open();
-            String CommandText = "SELECT * FROM teams WHERE Status = 'Enabled' ORDER BY Score DESC";
-            DB = new SQLiteDataAdapter(CommandText, sqlConn);
-            DS.Reset();
-            DB.Fill(DS);
-            this.sqlDT = DS.Tables[0];
+
+            String CommandText = "SELECT * FROM teams WHERE Status = 'Enabled' ORDER BY Score DESC";    
+            this.sqlDT = database.loadData(CommandText);
             this.teams = this.sqlDT.Rows.Count;
-            sqlConn.Close();
             this.lblTeam1 = this.sqlDT.Rows[0][1].ToString();
             this.lblTeamScore1 = this.sqlDT.Rows[0][3].ToString();
-            //MessageBox.Show("Connection Made");
         }
 
 

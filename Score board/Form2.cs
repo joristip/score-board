@@ -12,53 +12,33 @@ using System.IO;
 
 
 
+
 namespace Score_board
 {
     public partial class frmDashboard : Form
     {
 
-        private SQLiteConnection sqlConn;
-        private SQLiteCommand sqlCmd;
-        private DataTable sqlDT = new DataTable();
-        private DataSet DS = new DataSet();
-        private SQLiteDataAdapter DB;
+        
         private string absolutepath;
+        private Database database = new Database();
+        private DataTable dt = new DataTable();
         private frmScoreboard scoreboard = new frmScoreboard();
+
+        
         public frmDashboard()
         {
             InitializeComponent();
         }
 
-        private void SetConnection()
-        {
-            sqlConn = new SQLiteConnection("Data Source=C:\\Users\\Terrence\\Documents\\Visual Studio 2015\\Projects\\Scoreboard.db");
-        }
 
         private void LoadData()
         {
-            SetConnection();
-            sqlConn.Open();
-            String CommandText = "select * from teams ORDER BY Score DESC";
-            DB = new SQLiteDataAdapter(CommandText, sqlConn);
-            DS.Reset();
-            DB.Fill(DS);
-            this.sqlDT = DS.Tables[0];
-            dataGridView1.DataSource = DS.Tables[0];
-            sqlConn.Close();
+            this.dt = database.loadData("SELECT * FROM "+ Util.teamsTable + " WHERE Status = 'Enabled' ORDER BY Score DESC");
+            Console.Write(dt.Rows[1][2].ToString());
+            dataGridView1.DataSource = this.dt;
         }
 
-        private void executeQuery(String stringQuery)
-        {
 
-            SetConnection();
-            sqlConn.Open();
-            sqlCmd = sqlConn.CreateCommand();
-            sqlCmd.CommandText = stringQuery;
-            sqlCmd.ExecuteNonQuery();
-            sqlCmd.Dispose();
-            sqlConn.Close();
-
-        }
         private void frmDashboard_Load(object sender, EventArgs e)
         {
 
@@ -71,18 +51,17 @@ namespace Score_board
 
         private void loadToTextBoxes(String Team)
         {
-            SetConnection();
-            sqlConn.Open();
-            DB = new SQLiteDataAdapter(Team, sqlConn);
-            DS.Reset();
-            DB.Fill(DS);
-            txtScore.Text = DS.Tables[0].Rows[0][3].ToString();
-            cmbStatus.Text = DS.Tables[0].Rows[0][4].ToString();
-            sqlConn.Close();
+
+            this.dt = database.loadData(Team);
+            txtScore.Text = dt.Rows[0][3].ToString();
+            cmbStatus.Text = dt.Rows[0][4].ToString();
+         
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+             String directoryPath = Path.GetDirectoryName(Application.ExecutablePath);
+
             try
             {
 
@@ -92,8 +71,8 @@ namespace Score_board
                     txtTeam.Text = dataGridView1.SelectedRows[0].Cells[1].Value.ToString();
                     txtScore.Text = dataGridView1.SelectedRows[0].Cells[3].Value.ToString();
                     cmbStatus.Text = dataGridView1.SelectedRows[0].Cells[4].Value.ToString();
-                    //String absolutePath = absolutePath()
-                    absolutepath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), @"Images\" + dataGridView1.SelectedRows[0].Cells[2].Value.ToString() + "");
+
+                    absolutepath = Path.Combine(directoryPath, @Util.picturesDirectory + dataGridView1.SelectedRows[0].Cells[2].Value.ToString());
 
 
                 }
@@ -104,10 +83,9 @@ namespace Score_board
                     txtScore.Text = dataGridView1.Rows[e.RowIndex].Cells["Score"].FormattedValue.ToString();
                     cmbStatus.Text = dataGridView1.Rows[e.RowIndex].Cells["Status"].FormattedValue.ToString();
 
-                    absolutepath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), @"Images\" + dataGridView1.Rows[e.RowIndex].Cells["Image"].FormattedValue.ToString() + "");
+                    absolutepath = Path.Combine(directoryPath, @Util.picturesDirectory + dataGridView1.Rows[e.RowIndex].Cells["Image"].FormattedValue.ToString());
                 }
 
-                Console.WriteLine(absolutepath);
                 pictureBox2.Image = System.Drawing.Image.FromFile(absolutepath);
 
             }
@@ -134,12 +112,12 @@ namespace Score_board
             {
                 if (cmbAddPoints.SelectedIndex != -1 || !string.IsNullOrEmpty(cmbAddPoints.Text))
                 {
-                    String pointsQuery = "UPDATE teams SET Score = Score+" + cmbAddPoints.Text + " WHERE ID=" + txtID.Text;
-                    executeQuery(pointsQuery);
-
-                    loadToTextBoxes("select * from teams where ID=" + txtID.Text);
-                    LoadData();
+                    String pointsQuery = "UPDATE "+ Util.teamsTable  + " SET Score = Score+" + cmbAddPoints.Text + " WHERE ID=" + txtID.Text;
+                    database.executeQuery(pointsQuery);
+                    loadToTextBoxes("select * from "+ Util.teamsTable  + " where ID=" + txtID.Text);
                     reloadScoreboard();
+                    LoadData();
+                   
                 }
                 else
                 {
@@ -160,11 +138,8 @@ namespace Score_board
         {
 
             String enableDiableTeamQuery = "UPDATE teams SET Status='" + status + "' WHERE ID=" + txtID.Text;
-            executeQuery(enableDiableTeamQuery);
-
-            loadToTextBoxes("select * from teams where ID=" + txtID.Text);
-            LoadData();
-
+            database.executeQuery(enableDiableTeamQuery);
+            loadToTextBoxes("select * from "+ Util.teamsTable + " where ID=" + txtID.Text);
         }
 
         private void btnDisable_Click(object sender, EventArgs e)
@@ -202,25 +177,24 @@ namespace Score_board
                 pictureBox2.Image = new Bitmap(opnfd.FileName);
                 String name = Path.GetFileName(opnfd.FileName);
                 File.Copy(opnfd.FileName, Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), @"Images\" + name + ""), true);
-                String stringUpdatePicture = "UPDATE teams SET Image='" + name + "' WHERE ID=" + txtID.Text;
-                executeQuery(stringUpdatePicture);
-                loadToTextBoxes("select * from teams where ID=" + txtID.Text);
-                LoadData();
+                String stringUpdatePicture = "UPDATE "+ Util.teamsTable  + " SET Image='" + name + "' WHERE ID=" + txtID.Text;
+                database.executeQuery(stringUpdatePicture);
+                loadToTextBoxes("select * from "+ Util.teamsTable  + " where ID=" + txtID.Text);
             }
         }
 
         private void reloadScoreboard()
         {
 
-
-            this.scoreboard.teamLabelScore1.Text = this.sqlDT.Rows[0][3].ToString();
-            this.scoreboard.teamLabelScore2.Text = this.sqlDT.Rows[1][3].ToString();
-            this.scoreboard.teamLabelScore3.Text = this.sqlDT.Rows[2][3].ToString();
-            this.scoreboard.teamLabelScore4.Text = this.sqlDT.Rows[3][3].ToString();
-            this.scoreboard.teamLabelScore5.Text = this.sqlDT.Rows[4][3].ToString();
-            this.scoreboard.teamLabelScore6.Text = this.sqlDT.Rows[5][3].ToString();
-            this.scoreboard.teamLabelScore7.Text = this.sqlDT.Rows[6][3].ToString();
-            this.scoreboard.teamLabelScore8.Text = this.sqlDT.Rows[7][3].ToString();
+            DataTable dt = database.loadData("SELECT * FROM teams WHERE Status = 'Enabled' ORDER BY Score DESC");
+            this.scoreboard.teamLabelScore1.Text = dt.Rows[0][3].ToString();
+            this.scoreboard.teamLabelScore2.Text = dt.Rows[1][3].ToString();
+            this.scoreboard.teamLabelScore3.Text = dt.Rows[2][3].ToString();
+            this.scoreboard.teamLabelScore4.Text = dt.Rows[3][3].ToString();
+            this.scoreboard.teamLabelScore5.Text = dt.Rows[4][3].ToString();
+            this.scoreboard.teamLabelScore6.Text = dt.Rows[5][3].ToString();
+            this.scoreboard.teamLabelScore7.Text = dt.Rows[6][3].ToString();
+            this.scoreboard.teamLabelScore8.Text = dt.Rows[7][3].ToString();
 
         }
 
@@ -231,11 +205,11 @@ namespace Score_board
                 if (cmbAddPoints.SelectedIndex != -1 || !string.IsNullOrEmpty(cmbAddPoints.Text))
                 {
                     String updateQuery = "UPDATE teams SET Team='" + txtTeam.Text + "', Status ='" + cmbStatus.Text + "', Score = " + cmbAddPoints.Text + " WHERE ID=" + txtID.Text;
-                    executeQuery(updateQuery);
+                    database.executeQuery(updateQuery);
 
-                    loadToTextBoxes("SELECT * FROM  teams WHERE ID=" + txtID.Text);
-                    LoadData();
+                    loadToTextBoxes("SELECT * FROM  "+ Util.teamsTable  + " WHERE ID=" + txtID.Text);
                     reloadScoreboard();
+                    
 
                 }
                 else
@@ -254,18 +228,16 @@ namespace Score_board
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            //clearAllText(this);
-
             txtTeam.Text = "";
             cmbStatus.Text = "";
             cmbAddPoints.Text = "";
             txtTeam.Text = "";
             dataGridView1.ClearSelection();
 
-            String updateQuery = "UPDATE teams SET Status ='Enabled', Score = 0";
-            executeQuery(updateQuery);
-            LoadData();
+            String updateQuery = "UPDATE "+ Util.teamsTable + " SET Status ='Enabled', Score = 0";
+            database.executeQuery(updateQuery);       
             reloadScoreboard();
+            LoadData();
             ResetOrSet(true);
 
         }
