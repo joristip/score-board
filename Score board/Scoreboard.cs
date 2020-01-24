@@ -15,9 +15,8 @@ namespace Score_board
     public partial class frmScoreboard : System.Windows.Forms.Form
     {
 
-        private Database database = new Database();
+        private model.Team team = new model.Team();
         private DataTable sqlDT = new DataTable();
-        private DataSet DS = new DataSet();
 
         private int teams = 0;
         private string absolutepath;
@@ -86,8 +85,8 @@ namespace Score_board
         private void LoadData()
         {
 
-            String CommandText = "SELECT * FROM teams WHERE Status = 'Enabled' ORDER BY Score DESC";    
-            this.sqlDT = database.loadData(CommandText);
+
+            this.sqlDT = team.All();
             this.teams = this.sqlDT.Rows.Count;
             this.lblTeam1 = this.sqlDT.Rows[0][1].ToString();
             this.lblTeamScore1 = this.sqlDT.Rows[0][3].ToString();

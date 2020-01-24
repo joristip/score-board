@@ -75,15 +75,21 @@ namespace Score_board
             return this.DS.Tables[0];
         }
 
-        public void executeQuery(String stringQuery)
+        public Boolean executeQuery(String stringQuery)
         {
-
-            this.SqlConn.Open();
-            this.SqlCmd = this.SqlConn.CreateCommand();
-            this.SqlCmd.CommandText = stringQuery;
-            this.SqlCmd.ExecuteNonQuery();
-            this.SqlCmd.Dispose();
-            this.SqlConn.Close();
+            try {
+                this.SqlConn.Open();
+                this.SqlCmd = this.SqlConn.CreateCommand();
+                this.SqlCmd.CommandText = stringQuery;
+                this.SqlCmd.ExecuteNonQuery();
+                this.SqlCmd.Dispose();
+                this.SqlConn.Close();
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
 
         }
     }

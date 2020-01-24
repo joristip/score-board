@@ -7,7 +7,7 @@ namespace Score_board
 {
     public partial class Login : Form
     {
-        private Database database = new Database();
+        private model.User user = new model.User();
         public  Login()
         {
             InitializeComponent();
@@ -17,11 +17,8 @@ namespace Score_board
         private void btnLogin_Click(object sender, EventArgs e)
         {
 
-            String CommandText = "select * from users WHERE Username='"+ txtUsername.Text +"' AND Password='"+ txtPassword.Text +"'";
 
-            DataTable DS = database.loadData(CommandText);
-
-            if (DS.Rows.Count > 0)
+            if (user.IsUser(txtUsername.Text,txtPassword.Text))
             {
                 this.Hide();
                 var form2 = new frmDashboard();
@@ -31,10 +28,7 @@ namespace Score_board
             {
                 MessageBox.Show("Unfortunately User doesn't exist", "Login Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-          
-            database.SqlConn.Close();
-
-            
+                  
         }
     } 
 

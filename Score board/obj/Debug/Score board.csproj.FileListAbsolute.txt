@@ -22,3 +22,4 @@ C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score_board.frm
 C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score_board.frmScoreboard.resources
 C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score_board.Properties.Resources.resources
 C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score board.csproj.GenerateResource.Cache
+C:\Users\Terrence\Source\Repos\score-board\Score board\obj\Debug\Score board.csprojResolveAssemblyReference.cache
